@@ -26,22 +26,28 @@ async def on_ready():
     except Exception as e:
         print(e)
 
-@bot.tree.command(name="verify")
+@bot.tree.command(
+    name="verify",
+    description="認証を開始し、指定したロールを付与するための認証リンクを送信します。"
+)
 @app_commands.describe(role="認証で付与するロール")
 async def verify(interaction: discord.Interaction, role: discord.Role):
     embed = discord.Embed(title="認証", description="下のボタンを押して認証を進めてください。", color=discord.Color.random())
     view = discord.ui.View()
     button = discord.ui.Button(label="認証する", url=f"https://your-render-url.onrender.com/oauth?uid={interaction.user.id}&role={role.id}")
     view.add_item(button)
-    await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    await interaction.response.send_message(embed=embed, view=view, ephemeral=False)  # ephemeralをFalseに変更
 
-@bot.tree.command(name="call")
+@bot.tree.command(
+    name="call",
+    description="保存されたアクセストークンを使ってユーザーをサーバーに復元（追加）します。"
+)
 @app_commands.describe(user_id="復元したいユーザーのID")
 async def call(interaction: discord.Interaction, user_id: str):
     tokens = load_tokens()
     access_token = tokens.get(user_id)
     if not access_token:
-        await interaction.response.send_message("❌ アクセストークンが見つかりません。", ephemeral=True)
+        await interaction.response.send_message("❌ アクセストークンが見つかりません。", ephemeral=False)  # ephemeralをFalseに変更
         return
 
     guild_id = str(interaction.guild_id)
@@ -52,9 +58,9 @@ async def call(interaction: discord.Interaction, user_id: str):
     )
 
     if res.status_code in [200, 201, 204]:
-        await interaction.response.send_message("✅ ユーザーをこのサーバーに追加しました。", ephemeral=True)
+        await interaction.response.send_message("✅ ユーザーをこのサーバーに追加しました。", ephemeral=False)  # ephemeralをFalseに変更
     else:
-        await interaction.response.send_message(f"❌ 追加に失敗しました: {res.status_code}", ephemeral=True)
+        await interaction.response.send_message(f"❌ 追加に失敗しました: {res.status_code}", ephemeral=False)  # ephemeralをFalseに変更
 
 keep_alive()
 bot.run(TOKEN)
