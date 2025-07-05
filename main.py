@@ -35,7 +35,7 @@ async def verify(interaction: discord.Interaction, role: discord.Role):
     try:
         embed = discord.Embed(
             title="認証",
-            description="下のボタンを押して認証を進めてください。",
+            description="下のボタンを押して認証をしてください。",
             color=discord.Color.random()
         )
         view = discord.ui.View(timeout=None)
@@ -44,7 +44,7 @@ async def verify(interaction: discord.Interaction, role: discord.Role):
             url=f"https://verifybot-b9xw.onrender.com/oauth?uid={interaction.user.id}&role={role.id}"
         )
         view.add_item(button)
-        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=False)
     except Exception as e:
         print("verify command error:", e)
 
