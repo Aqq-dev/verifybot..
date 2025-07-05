@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import os, json, requests
+from keep_alive import keep_alive
 
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 intents = discord.Intents.all()
@@ -55,4 +56,5 @@ async def call(interaction: discord.Interaction, user_id: str):
     else:
         await interaction.response.send_message(f"❌ 追加に失敗しました: {res.status_code}", ephemeral=True)
 
+keep_alive()
 bot.run(TOKEN)
