@@ -28,26 +28,36 @@ async def on_ready():
 
 @bot.tree.command(
     name="verify",
-    description="認証を開始し、指定したロールを付与するための認証リンクを送信します。"
+    description="認証パネルを設置します。"
 )
 @app_commands.describe(role="認証で付与するロール")
 async def verify(interaction: discord.Interaction, role: discord.Role):
-    embed = discord.Embed(title="認証", description="下のボタンを押して認証を進めてください。", color=discord.Color.random())
-    view = discord.ui.View()
-    button = discord.ui.Button(label="認証する", url=f"https://verifybot-b9xw.onrender.com/oauth?uid={interaction.user.id}&role={role.id}")
-    view.add_item(button)
-    await interaction.response.send_message(embed=embed, view=view, ephemeral=False)
+    try:
+        embed = discord.Embed(
+            title="認証",
+            description="下のボタンを押して認証を進めてください。",
+            color=discord.Color.random()
+        )
+        view = discord.ui.View(timeout=None)
+        button = discord.ui.Button(
+            label="認証する",
+            url=f"https://verifybot-b9xw.onrender.com/oauth?uid={interaction.user.id}&role={role.id}"
+        )
+        view.add_item(button)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    except Exception as e:
+        print("verify command error:", e)
 
 @bot.tree.command(
     name="call",
-    description="保存されたアクセストークンを使ってユーザーをサーバーに復元（追加）します。"
+    description="保存されたアクセストークンを使ってユーザーをサーバーに追加します。"
 )
 @app_commands.describe(user_id="復元したいユーザーのID")
 async def call(interaction: discord.Interaction, user_id: str):
     tokens = load_tokens()
     access_token = tokens.get(user_id)
     if not access_token:
-        await interaction.response.send_message("❌ アクセストークンが見つかりません。", ephemeral=False)
+        await interaction.response.send_message("❌ アクセストークンが見つかりません。", ephemeral=True)
         return
 
     guild_id = str(interaction.guild_id)
@@ -58,9 +68,9 @@ async def call(interaction: discord.Interaction, user_id: str):
     )
 
     if res.status_code in [200, 201, 204]:
-        await interaction.response.send_message("✅ ユーザーをこのサーバーに追加しました。", ephemeral=False)
+        await interaction.response.send_message("✅ ユーザーをこのサーバーに追加しました。", ephemeral=True)
     else:
-        await interaction.response.send_message(f"❌ 追加に失敗しました: {res.status_code}", ephemeral=False)
+        await interaction.response.send_message(f"❌ 追加に失敗しました: {res.status_code}", ephemeral=True)
 
 keep_alive()
 bot.run(TOKEN)
